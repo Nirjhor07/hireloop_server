@@ -42,9 +42,26 @@ async function run() {
     // create jobs collection if it doesn't exist
     const jobsCollection = database.collection("jobs");
 
+    // API endpoint to add a new job
     app.post("/api/jobs", async (req,res)=>{
         const job = req.body;
         const result = await jobsCollection.insertOne(job);
+        res.send(result);
+    })
+
+    // API endpoint to get all jobs by status & companyId
+    app.get("/api/jobs", async (req,res)=>{
+        const query = {};
+        // req.query will contain the query parameters from the URL, e.g., /api/jobs?status=active&companyId=123
+        // console.log("Query params: ", req.query);
+        if(req.query.status){
+            query.status = req.query.status;
+        }
+        if(req.query.companyId){
+            query.companyId = req.query.companyId;
+        }
+        console.log("Query: ", query);
+        const result = await jobsCollection.find(query).toArray();
         res.send(result);
     })
 
